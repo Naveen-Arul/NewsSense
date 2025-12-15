@@ -1,8 +1,10 @@
-# NewsSense - AI-Powered Multiclass News Classification System
+# NewsSense - An Explainable NLP-Based News Classification System
 
 ## 🎯 Project Overview
 
 **NewsSense** is a full-stack machine learning application that demonstrates the complete lifecycle of a text classification system. The project classifies news articles into 20 distinct categories using advanced Natural Language Processing (NLP) and multiple machine learning algorithms. Rather than being a black-box solution, NewsSense emphasizes **transparency**, **explainability**, and **educational value** by exposing the inner workings of the ML pipeline.
+
+**The goal of NewsSense is to bridge the gap between academic machine learning and real-world deployment by building a transparent, explainable, and full-stack news classification system.**
 
 ## 🏗️ System Architecture
 
@@ -28,7 +30,7 @@ The application follows a **three-tier architecture** designed for scalability, 
   - **Request Handling**: Receives raw text via REST API
   - **Text Processing**: Applies the same NLP pipeline used during training
   - **Multi-Model Prediction**: Runs inference across all trained models simultaneously
-  - **Response Formatting**: Returns predictions with confidence scores and metadata
+  - **Response Formatting**: Returns predictions with performance metrics and metadata
 - **Endpoints**:
   - `GET /models` - Returns model performance metrics
   - `POST /predict` - Accepts text and returns classification results
@@ -44,7 +46,7 @@ The application follows a **three-tier architecture** designed for scalability, 
 - **Features**:
   - Real-time text classification
   - Visual comparison of all model predictions
-  - Confidence score visualization
+  - Performance metrics visualization
   - Best model highlighting
   - Responsive design with modern UI components
 
@@ -160,7 +162,7 @@ Transform text using saved TF-IDF vectorizer
     ↓
 Run prediction on all 4 models
     ↓
-Collect predictions, confidence scores, and metadata
+Collect predictions, performance metrics, and metadata
     ↓
 Return JSON response to Frontend
     ↓
@@ -319,7 +321,7 @@ Classifies input text using all models.
     {
       "model": "Naive Bayes",
       "prediction": "sci.space",
-      "confidence": 0.92
+      "prediction_confidence": 0.92
     },
     ...
   ],
@@ -352,7 +354,7 @@ Lists all 20 news categories.
 2. **Education**: The system teaches ML concepts through interactive visualization
 3. **Production-Readiness**: Follows best practices for real-world ML deployment
 
-The project bridges the gap between academic ML tutorials and production systems, demonstrating how to build a robust, scalable, and user-friendly AI application.
+The project bridges the gap between academic ML tutorials and production systems, demonstrating how to build a robust, scalable, and user-friendly ML application.
 
 ---
 

@@ -36,12 +36,12 @@ const features = [
   },
   {
     icon: Server,
-    title: "Full-Stack AI System Design",
+    title: "Full-Stack ML System Design",
     description: "The project follows a full-stack architecture: Frontend for user interaction and visualization, FastAPI-based backend ML microservice, and pretrained machine learning models loaded at startup. This separation improves scalability and maintainability.",
   },
   {
     icon: GraduationCap,
-    title: "Educational and Explainable AI Focus",
+    title: "Educational and Explainable ML Focus",
     description: "Beyond prediction, the system is designed to be educational. It helps users and learners understand NLP preprocessing, machine learning model behavior, and performance evaluation.",
   },
 ];
@@ -53,7 +53,7 @@ const techStack = [
     icon: "⚛️",
     achievements: [
       "Built responsive UI with Tailwind CSS and shadcn/ui components",
-      "Implemented real-time classification with dynamic confidence scoring",
+      "Implemented real-time classification with dynamic prediction confidence display",
       "Created split-screen layout for optimal data visualization",
       "Added gradient animations and modern design system"
     ]
@@ -152,7 +152,7 @@ const HomePage = () => {
             <span>Powered by Machine Learning</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-secondary-foreground mb-6 leading-tight animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            AI-Powered Multiclass
+            ML-Based Multiclass
             <span className="block text-primary drop-shadow-lg">News Classification</span>
           </h1>
           <p className="text-lg md:text-xl text-secondary-foreground/90 mb-10 max-w-3xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -314,7 +314,7 @@ const HomePage = () => {
             <span className="font-semibold text-foreground">NewsSense</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            AI-Powered Multiclass News Classification System
+            ML-Based Multiclass News Classification System
           </p>
         </div>
       </footer>

@@ -52,7 +52,7 @@ class PredictionRequest(BaseModel):
 class ModelPrediction(BaseModel):
     model: str
     prediction: str
-    confidence: float
+    prediction_confidence: float
 
 class PredictionResponse(BaseModel):
     input_text: str
@@ -298,14 +298,14 @@ async def predict(request: PredictionRequest):
             try:
                 # For models that support predict_proba
                 probabilities = model.predict_proba(text_vector)[0]
-                confidence = float(probabilities[prediction_index])
+                prediction_confidence = float(probabilities[prediction_index])
             except AttributeError:
                 # For models without predict_proba (like SVM with default kernel)
                 # Use decision function and normalize
                 decision = model.decision_function(text_vector)[0]
                 # Normalize to 0-1 range using softmax-like approach
                 exp_decision = np.exp(decision - np.max(decision))
-                confidence = float(exp_decision[prediction_index] / exp_decision.sum())
+                prediction_confidence = float(exp_decision[prediction_index] / exp_decision.sum())
             
             # Get metrics from training
             metrics = MODEL_METRICS[model_name]
@@ -314,7 +314,7 @@ async def predict(request: PredictionRequest):
             results.append(ModelPrediction(
                 model=model_name,
                 prediction=prediction_label,
-                confidence=round(confidence, 4)
+                prediction_confidence=round(prediction_confidence, 4)
             ))
         
         # Build response

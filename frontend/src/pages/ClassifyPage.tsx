@@ -9,7 +9,7 @@ import heroBg from "@/assets/hero-bg.jpg";
 interface ModelResult {
   model: string;
   prediction: string;
-  confidence: number;
+  prediction_confidence: number;
 }
 
 interface PredictionResponse {
@@ -103,9 +103,9 @@ const ClassifyPage = () => {
     ? modelMetrics.reduce((prev, current) => (prev.accuracy > current.accuracy) ? prev : current)
     : null;
 
-  // Get best model by confidence from current prediction
+  // Get best model by prediction confidence from current prediction
   const bestModelByConfidence = result 
-    ? result.results.reduce((prev, current) => (prev.confidence > current.confidence) ? prev : current)
+    ? result.results.reduce((prev, current) => (prev.prediction_confidence > current.prediction_confidence) ? prev : current)
     : null;
 
   return (
@@ -336,7 +336,7 @@ const ClassifyPage = () => {
                               Predicted Topic
                             </th>
                             <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                              Confidence
+                              Prediction Confidence
                             </th>
                           </tr>
                         </thead>
@@ -367,11 +367,11 @@ const ClassifyPage = () => {
                                 </td>
                                 <td className="py-4 px-4 text-right">
                                   <span className={`font-mono text-sm font-semibold ${
-                                    modelResult.confidence >= 0.7 ? "text-green-600" :
-                                    modelResult.confidence >= 0.5 ? "text-yellow-600" :
+                                    modelResult.prediction_confidence >= 0.7 ? "text-green-600" :
+                                    modelResult.prediction_confidence >= 0.5 ? "text-yellow-600" :
                                     "text-red-600"
                                   }`}>
-                                    {formatPercentage(modelResult.confidence)}
+                                    {formatPercentage(modelResult.prediction_confidence)}
                                   </span>
                                 </td>
                               </tr>
@@ -400,7 +400,7 @@ const ClassifyPage = () => {
                       <div className="text-right bg-primary/20 rounded-xl px-4 py-3 border border-primary/30">
                         <p className="text-xs text-primary font-semibold uppercase tracking-wide mb-1">Score</p>
                         <p className="text-3xl font-black bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                          {bestModelByConfidence && formatPercentage(bestModelByConfidence.confidence)}
+                          {bestModelByConfidence && formatPercentage(bestModelByConfidence.prediction_confidence)}
                         </p>
                       </div>
                     </div>
@@ -438,7 +438,7 @@ const ClassifyPage = () => {
             <span className="font-semibold text-foreground">NewsSense</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            AI-Powered Multiclass News Classification System
+            ML-Based Multiclass News Classification System
           </p>
         </div>
       </footer>
