@@ -1,0 +1,13 @@
+# FastAPI ML Inference API Requirements
+fastapi==0.115.5
+uvicorn==0.34.0
+pydantic==2.10.4
+python-multipart==0.0.20
+python-dotenv==1.0.1
+numpy
+pandas
+scikit-learn
+nltk
+joblib
+matplotlib
+seaborn
