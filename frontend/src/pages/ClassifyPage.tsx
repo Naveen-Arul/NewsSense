@@ -25,6 +25,8 @@ interface ModelInfo {
 }
 
 const ClassifyPage = () => {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PredictionResponse | null>(null);
@@ -36,7 +38,7 @@ const ClassifyPage = () => {
   useEffect(() => {
     const fetchModelMetrics = async () => {
       try {
-        const response = await fetch("http://localhost:8000/models");
+        const response = await fetch(`${API_URL}/models`);
         const data = await response.json();
         setModelMetrics(data.models);
       } catch (err) {
@@ -61,7 +63,7 @@ const ClassifyPage = () => {
     setResult(null);
 
     try {
-      const response = await fetch("http://localhost:8000/predict", {
+      const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
