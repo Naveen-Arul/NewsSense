@@ -13,8 +13,8 @@ venv/
 # Environment variables
 .env
 
-# Models
-models/*.pkl
+# Models (commented out to include in deployment)
+# models/*.pkl
 
 # IDE
 .vscode/
