@@ -12,7 +12,7 @@ const features = [
   {
     icon: Layers,
     title: "Multi-Model Machine Learning Architecture",
-    description: "Instead of relying on a single classifier, the system uses four machine learning models: Naive Bayes for fast probabilistic text classification, Logistic Regression as a strong linear baseline, Support Vector Machine (SVM) for high-dimensional sparse text data, and Random Forest to capture non-linear patterns. This approach allows model comparison rather than hiding model behavior.",
+    description: "Instead of relying on a single classifier, the system uses six lightweight machine learning models: Logistic Regression for linear classification, Linear SVM for high-dimensional sparse text data, Multinomial Naive Bayes for probabilistic text classification, Complement Naive Bayes for imbalanced data, Bernoulli Naive Bayes for binary features, and SGD Classifier for scalable learning. This memory-efficient approach enables deployment on resource-constrained environments.",
   },
   {
     icon: LineChart,
@@ -82,13 +82,15 @@ const techStack = [
   },
   {
     category: "Machine Learning",
-    tech: "4 ML Models",
+    tech: "6 Lightweight ML Models",
     icon: "🤖",
     achievements: [
-      "Trained Naive Bayes (71.35% accuracy, 68.53% F1)",
-      "Trained Logistic Regression (73.40% accuracy, 71.12% F1)",
-      "Trained Support Vector Machine (74.89% accuracy, 72.89% F1) - Best Model",
-      "Trained Random Forest (66.23% accuracy, 62.34% F1)"
+      "Trained SGD Classifier (72.20% accuracy, 71.87% F1) - Best Model",
+      "Trained Logistic Regression (71.83% accuracy, 71.76% F1)",
+      "Trained Linear SVM (71.49% accuracy, 71.56% F1)",
+      "Trained Complement Naive Bayes (71.43% accuracy, 70.91% F1)",
+      "Trained Multinomial Naive Bayes (71.11% accuracy, 70.00% F1)",
+      "Trained Bernoulli Naive Bayes (56.39% accuracy, 58.47% F1)"
     ]
   },
   {
@@ -104,13 +106,14 @@ const techStack = [
   },
   {
     category: "Deployment",
-    tech: "Model Persistence",
+    tech: "Memory-Safe Model Persistence",
     icon: "💾",
     achievements: [
-      "Saved all 4 models individually as .pkl files",
-      "Implemented joblib for efficient model serialization",
-      "Created model loading with error handling",
-      "Stored TF-IDF vectorizer for consistent inference"
+      "Saved all 6 lightweight models individually as .pkl files",
+      "Implemented sequential model loading for 512MB RAM constraint",
+      "Created SafeModelLoader with garbage collection after each prediction",
+      "Stored TF-IDF vectorizer and metadata for consistent inference",
+      "Optimized for Render Free Tier deployment"
     ]
   },
 ];

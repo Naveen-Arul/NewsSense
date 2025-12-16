@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Brain, ArrowLeft, Send, Loader2, Trophy, AlertCircle, Sparkles, TrendingUp, Award, Target, Zap } from "lucide-react";
+import { Brain, ArrowLeft, Loader2, Trophy, AlertCircle, Sparkles, TrendingUp, Award, Target, Zap, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -9,13 +9,16 @@ import heroBg from "@/assets/hero-bg.jpg";
 interface ModelResult {
   model: string;
   prediction: string;
-  prediction_confidence: number;
+  confidence: number;
+  status?: "waiting" | "predicting" | "completed";
 }
 
 interface PredictionResponse {
   cleaned_text: string;
-  results: ModelResult[];
+  predictions: ModelResult[];
   best_model: string;
+  best_prediction: string;
+  total_models: number;
 }
 
 interface ModelInfo {
@@ -24,12 +27,24 @@ interface ModelInfo {
   f1_score: number;
 }
 
+// Define the 6 models in order
+const MODEL_NAMES = [
+  "Logistic Regression",
+  "Linear SVM",
+  "Multinomial Naive Bayes",
+  "Complement Naive Bayes",
+  "Bernoulli Naive Bayes",
+  "SGD Classifier"
+];
+
 const ClassifyPage = () => {
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
   
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<PredictionResponse | null>(null);
+  const [cleanedText, setCleanedText] = useState("");
+  const [modelResults, setModelResults] = useState<ModelResult[]>([]);
+  const [bestModel, setBestModel] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [modelMetrics, setModelMetrics] = useState<ModelInfo[]>([]);
   const { toast } = useToast();
@@ -60,7 +75,17 @@ const ClassifyPage = () => {
 
     setIsLoading(true);
     setError(null);
-    setResult(null);
+    setCleanedText("");
+    setBestModel("");
+    
+    // Initialize all models as "waiting"
+    const initialResults: ModelResult[] = MODEL_NAMES.map(name => ({
+      model: name,
+      prediction: "",
+      confidence: 0,
+      status: "waiting"
+    }));
+    setModelResults(initialResults);
 
     try {
       const response = await fetch(`${API_URL}/predict`, {
@@ -75,13 +100,21 @@ const ClassifyPage = () => {
         throw new Error(`Server error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: PredictionResponse = await response.json();
       
-      // API returns results array directly
-      setResult(data);
+      // Update with completed results
+      const completedResults = data.predictions.map(pred => ({
+        ...pred,
+        status: "completed" as const
+      }));
+      
+      setModelResults(completedResults);
+      setCleanedText(data.cleaned_text);
+      setBestModel(data.best_model);
+      
       toast({
         title: "Classification Complete",
-        description: "Your news article has been successfully classified.",
+        description: `All ${data.total_models} models have finished predicting.`,
       });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to connect to the API";
@@ -91,6 +124,7 @@ const ClassifyPage = () => {
         description: "Could not connect to the backend API. Please ensure the server is running.",
         variant: "destructive",
       });
+      setModelResults([]);
     } finally {
       setIsLoading(false);
     }
@@ -106,9 +140,23 @@ const ClassifyPage = () => {
     : null;
 
   // Get best model by prediction confidence from current prediction
-  const bestModelByConfidence = result 
-    ? result.results.reduce((prev, current) => (prev.prediction_confidence > current.prediction_confidence) ? prev : current)
+  const bestModelByConfidence = modelResults.length > 0 && bestModel
+    ? modelResults.find(r => r.model === bestModel)
     : null;
+
+  // Get status icon for each model
+  const getStatusIcon = (status?: string) => {
+    switch (status) {
+      case "waiting":
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
+      case "predicting":
+        return <Loader2 className="h-4 w-4 text-primary animate-spin" />;
+      case "completed":
+        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div 
@@ -193,7 +241,7 @@ const ClassifyPage = () => {
               </div>
 
               {/* Cleaned Text */}
-              {result && (
+              {cleanedText && (
                 <div className="bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-md rounded-2xl border-2 border-green-500/30 card-shadow p-6 animate-fade-in relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
                   <div className="relative">
@@ -207,7 +255,7 @@ const ClassifyPage = () => {
                     </div>
                     <div className="bg-gradient-to-br from-muted/60 to-muted/40 rounded-xl p-4 max-h-[200px] overflow-y-auto border border-border/50">
                       <p className="text-sm text-muted-foreground font-mono leading-relaxed">
-                        {result.cleaned_text}
+                        {cleanedText}
                       </p>
                     </div>
                   </div>
@@ -311,7 +359,7 @@ const ClassifyPage = () => {
               )}
 
               {/* Model Results Table */}
-              {result && (
+              {modelResults.length > 0 && (
                 <>
                   <div className="bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-md rounded-2xl border-2 border-primary/20 card-shadow p-6 animate-fade-in relative overflow-hidden">
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent/10 rounded-full blur-3xl"></div>
@@ -324,94 +372,122 @@ const ClassifyPage = () => {
                           <h2 className="text-lg font-bold text-card-foreground">
                             Model Predictions
                           </h2>
-                          <p className="text-xs text-muted-foreground">Real-time classification results</p>
+                          <p className="text-xs text-muted-foreground">
+                            {isLoading ? "Processing models sequentially..." : "Sequential classification results"}
+                          </p>
                         </div>
                       </div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b border-border">
-                            <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                              Model
-                            </th>
-                            <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                              Predicted Topic
-                            </th>
-                            <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                              Prediction Confidence
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {result.results.map((modelResult, index) => {
-                            const isBest = bestModelByConfidence?.model === modelResult.model;
-                            return (
-                              <tr
-                                key={index}
-                                className={`border-b border-border/50 last:border-b-0 transition-colors ${
-                                  isBest ? "bg-primary/10" : "hover:bg-muted/30"
-                                }`}
-                              >
-                                <td className="py-4 px-4">
-                                  <div className="flex items-center gap-2">
-                                    {isBest && (
-                                      <Trophy className="h-4 w-4 text-primary" />
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-border">
+                              <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                                Status
+                              </th>
+                              <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                                Model
+                              </th>
+                              <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                                Predicted Topic
+                              </th>
+                              <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                                Confidence
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {modelResults.map((modelResult, index) => {
+                              const isBest = bestModel === modelResult.model;
+                              return (
+                                <tr
+                                  key={index}
+                                  className={`border-b border-border/50 last:border-b-0 transition-colors ${
+                                    isBest ? "bg-primary/10" : "hover:bg-muted/30"
+                                  }`}
+                                >
+                                  <td className="py-4 px-4">
+                                    {getStatusIcon(modelResult.status)}
+                                  </td>
+                                  <td className="py-4 px-4">
+                                    <div className="flex items-center gap-2">
+                                      {isBest && (
+                                        <Trophy className="h-4 w-4 text-primary" />
+                                      )}
+                                      <span className={`font-medium text-sm ${isBest ? "text-primary" : "text-card-foreground"}`}>
+                                        {modelResult.model}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="py-4 px-4">
+                                    {modelResult.prediction ? (
+                                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent/20 text-accent-foreground">
+                                        {modelResult.prediction}
+                                      </span>
+                                    ) : (
+                                      <div className="flex items-center gap-2">
+                                        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                                        <span className="text-muted-foreground text-sm">
+                                          {modelResult.status === "waiting" ? "Waiting" : "Processing"}
+                                        </span>
+                                      </div>
                                     )}
-                                    <span className={`font-medium text-sm ${isBest ? "text-primary" : "text-card-foreground"}`}>
-                                      {modelResult.model}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className="py-4 px-4">
-                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent/20 text-accent-foreground">
-                                    {modelResult.prediction}
-                                  </span>
-                                </td>
-                                <td className="py-4 px-4 text-right">
-                                  <span className={`font-mono text-sm font-semibold ${
-                                    modelResult.prediction_confidence >= 0.7 ? "text-green-600" :
-                                    modelResult.prediction_confidence >= 0.5 ? "text-yellow-600" :
-                                    "text-red-600"
-                                  }`}>
-                                    {formatPercentage(modelResult.prediction_confidence)}
-                                  </span>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
+                                  </td>
+                                  <td className="py-4 px-4 text-right">
+                                    {modelResult.confidence > 0 ? (
+                                      <span className={`font-mono text-sm font-semibold ${
+                                        modelResult.confidence >= 0.7 ? "text-green-600" :
+                                        modelResult.confidence >= 0.5 ? "text-yellow-600" :
+                                        "text-red-600"
+                                      }`}>
+                                        {formatPercentage(modelResult.confidence)}
+                                      </span>
+                                    ) : (
+                                      <div className="flex items-center justify-end gap-2">
+                                        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                                      </div>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Best Model Highlight - Based on Confidence */}
-                  <div className="bg-gradient-to-br from-primary/20 via-primary/15 to-primary/10 backdrop-blur-md border-2 border-primary/40 rounded-2xl p-6 animate-fade-in relative overflow-hidden shadow-xl shadow-primary/20">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
-                    <div className="relative flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/20 flex items-center justify-center shadow-lg">
-                        <Trophy className="h-8 w-8 text-primary animate-pulse" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-primary font-bold uppercase tracking-wide mb-1 flex items-center gap-1">
-                          <Sparkles className="h-3 w-3" />
-                          Highest Confidence
-                        </p>
-                        <p className="text-2xl font-bold text-foreground">{bestModelByConfidence?.model}</p>
-                      </div>
-                      <div className="text-right bg-primary/20 rounded-xl px-4 py-3 border border-primary/30">
-                        <p className="text-xs text-primary font-semibold uppercase tracking-wide mb-1">Score</p>
-                        <p className="text-3xl font-black bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                          {bestModelByConfidence && formatPercentage(bestModelByConfidence.prediction_confidence)}
-                        </p>
+                  {/* Best Model Highlight - Only show when completed */}
+                  {bestModelByConfidence && !isLoading && (
+                    <div className="bg-gradient-to-br from-primary/20 via-primary/15 to-primary/10 backdrop-blur-md border-2 border-primary/40 rounded-2xl p-6 animate-fade-in relative overflow-hidden shadow-xl shadow-primary/20">
+                      <div className="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
+                      <div className="relative flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/20 flex items-center justify-center shadow-lg">
+                          <Trophy className="h-8 w-8 text-primary animate-pulse" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-primary font-bold uppercase tracking-wide mb-1 flex items-center gap-1">
+                            <Sparkles className="h-3 w-3" />
+                            Highest Confidence
+                          </p>
+                          <p className="text-2xl font-bold text-foreground">{bestModelByConfidence.model}</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Prediction: <span className="font-semibold text-foreground">{bestModelByConfidence.prediction}</span>
+                          </p>
+                        </div>
+                        <div className="text-right bg-primary/20 rounded-xl px-4 py-3 border border-primary/30">
+                          <p className="text-xs text-primary font-semibold uppercase tracking-wide mb-1">Score</p>
+                          <p className="text-3xl font-black bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                            {formatPercentage(bestModelByConfidence.confidence)}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </>
               )}
 
               {/* Placeholder when no results */}
-              {!result && !error && (
+              {modelResults.length === 0 && !error && (
                 <div className="bg-gradient-to-br from-card/60 to-card/40 backdrop-blur-sm rounded-2xl border-2 border-dashed border-border/50 p-12 text-center relative overflow-hidden group hover:border-primary/30 transition-all duration-300">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="relative">
@@ -422,7 +498,7 @@ const ClassifyPage = () => {
                       Awaiting Classification
                     </p>
                     <p className="text-sm text-muted-foreground/60">
-                      Enter news text and click "Classify News" to see predictions
+                      Enter news text and click "Classify News" to see predictions from all 6 models
                     </p>
                   </div>
                 </div>
