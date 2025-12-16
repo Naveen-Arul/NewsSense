@@ -158,10 +158,24 @@ const HomePage = () => {
             ML-Based Multiclass
             <span className="block text-primary drop-shadow-lg">News Classification</span>
           </h1>
-          <p className="text-lg md:text-xl text-secondary-foreground/90 mb-10 max-w-3xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <p className="text-lg md:text-xl text-secondary-foreground/90 mb-6 max-w-3xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
             An end-to-end NLP and Machine Learning system that cleans noisy text,
             compares multiple ML models, and transparently shows predictions and performance.
           </p>
+          
+          {/* Developer Credit */}
+          <div className="flex justify-center mb-10 animate-fade-in" style={{ animationDelay: '0.25s' }}>
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-primary/20 via-primary/15 to-primary/20 border border-primary/30 backdrop-blur-sm shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105">
+              <GraduationCap className="h-5 w-5 text-primary" />
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-secondary-foreground/80">Developed by</span>
+                <span className="text-base font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  Naveen Arul
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <Link to="/classify">
               <Button variant="hero" size="xl" className="w-full sm:w-auto glow-primary">
