@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Brain, Sparkles, Layers, LineChart, Zap, GitCompare, Server, GraduationCap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const features = [
@@ -128,12 +129,15 @@ const HomePage = () => {
             <Brain className="h-8 w-8 text-primary" />
             <span className="font-semibold text-lg text-secondary-foreground">NewsSense</span>
           </Link>
-          <Link to="/classify">
-            <Button variant="default" size="sm">
-              Try Classification
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <Link to="/classify">
+              <Button variant="default" size="sm">
+                Try Classification
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 

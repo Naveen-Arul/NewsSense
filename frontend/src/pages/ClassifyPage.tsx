@@ -4,6 +4,7 @@ import { Brain, ArrowLeft, Loader2, Trophy, AlertCircle, Sparkles, TrendingUp, A
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import ThemeToggle from "@/components/ThemeToggle";
 import heroBg from "@/assets/hero-bg.jpg";
 
 interface ModelResult {
@@ -178,12 +179,15 @@ const ClassifyPage = () => {
             <Brain className="h-8 w-8 text-primary" />
             <span className="font-semibold text-lg text-secondary-foreground">NewsSense</span>
           </Link>
-          <Link to="/">
-            <Button variant="ghost" size="sm" className="text-secondary-foreground hover:text-primary">
-              <ArrowLeft className="mr-1 h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <Link to="/">
+              <Button variant="ghost" size="sm" className="text-secondary-foreground hover:text-primary">
+                <ArrowLeft className="mr-1 h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
