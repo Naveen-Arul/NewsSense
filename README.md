@@ -1,5 +1,7 @@
 # NewsSense - An Explainable NLP-Based News Classification System
+[**Live Demo**](https://newssense.vercel.app/) | [GitHub Repository](https://github.com/yourusername/NewsSense)
 
+---
 ## 🎯 Project Overview
 
 **NewsSense** is a full-stack machine learning application that demonstrates the complete lifecycle of a text classification system. The project classifies news articles into 20 distinct categories using advanced Natural Language Processing (NLP) and multiple machine learning algorithms. Rather than being a black-box solution, NewsSense emphasizes **transparency**, **explainability**, and **educational value** by exposing the inner workings of the ML pipeline.
@@ -349,6 +351,8 @@ Lists all 20 news categories.
 
 
 # NewsSense: A Complete Guide to News Analysis and Fake News Detection
+
+
 
 ## SECTION 1: PROJECT INTENT AND REAL-WORLD CONTEXT
 
