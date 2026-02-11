@@ -1,5 +1,5 @@
 # NewsSense - An Explainable NLP-Based News Classification System
-[**Live Demo**](https://newssense.vercel.app/) | [GitHub Repository](https://github.com/yourusername/NewsSense)
+**Live Application**: https://newssense.vercel.app/
 
 ---
 ## 🎯 Project Overview
