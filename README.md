@@ -1,6 +1,26 @@
 # NewsSense - An Explainable NLP-Based News Classification System
 **Live Application**: https://newssense.vercel.app/
 
+## Application Screenshots
+
+### 1. Home Page
+![Home Page](screenshots/one.png)
+
+### 2. System Features
+![Classification Page](screenshots/two.png)
+
+### 3. Tech Stack & Achievements
+![Model Comparison](screenshots/three.png)
+
+### 4. Trained model Results
+![Results Page](screenshots/four.png)
+
+### 5. Input Arena
+![Performance Metrics](screenshots/five.png)
+
+### 6. Detailed Analysis with Cleaned text
+![Detailed Analysis](screenshots/six.png)
+
 ---
 ## 🎯 Project Overview
 
